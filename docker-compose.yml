@@ -1,0 +1,32 @@
+services:
+  mongo:
+    image: mongo:7
+    ports: ['27017:27017']
+    volumes: [mongo_data:/data/db]
+  django:
+    build: ./backend
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    ports: ['8000:8000']
+    environment:
+      DEALER_SERVICE_URL: http://dealer-service:5001
+      SENTIMENT_SERVICE_URL: http://sentiment-service:5002
+      DJANGO_SECRET_KEY: local-capstone-secret
+    depends_on: [mongo, dealer-service, sentiment-service]
+  dealer-service:
+    build: ./dealer-service
+    ports: ['5001:5001']
+    environment:
+      MONGO_URL: mongodb://mongo:27017
+      DB_NAME: dealership
+    depends_on: [mongo]
+  sentiment-service:
+    build: ./sentiment-service
+    ports: ['5002:5002']
+  frontend:
+    build: ./frontend
+    ports: ['3000:3000']
+    environment:
+      REACT_APP_BACKEND_URL: http://localhost:8000
+    depends_on: [django]
+volumes:
+  mongo_data:
