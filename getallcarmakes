@@ -1,0 +1,3 @@
+
+curl -X GET http://localhost:8000/api/makes \
+  -H "Content-Type: application/json"
