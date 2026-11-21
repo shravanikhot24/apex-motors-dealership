@@ -1,0 +1,6 @@
+
+Django==5.1.5
+requests==2.32.3
+python-dotenv
+pymongo
+textblob
